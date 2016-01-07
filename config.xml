@@ -77,5 +77,5 @@
     <allow-intent href="itms-apps:*"/>
   </platform>
   
-  <gap:plugin name="io.litehelpers.cordova.sqlite"/>
+  <plugin name="io.litehelpers.cordova.sqlite" spec="0.7.10" source="pgb" />
 </widget>

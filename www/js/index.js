@@ -34,10 +34,6 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-		console.log('hhhhhhhhhhhhhhhhhhhhhhhhhh'+window.sqlitePlugin);
-		setTimeout(function(){
-			initDB();
-		}, 100);
 		
     },
     // Update DOM on a Received Event
