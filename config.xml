@@ -79,5 +79,4 @@
     <allow-intent href="itms-apps:*"/>
   </platform>
   
-  <plugin name="io.litehelpers.cordova.sqlite" spec="0.7.10" source="pgb" />
 </widget>
