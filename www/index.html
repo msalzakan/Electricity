@@ -26,23 +26,448 @@
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+        
+        
+        <link rel="stylesheet" href="./js/jquery/jquery.mobile-1.4.5.min.css" />
+        <script src="./js/jquery/jquery.min.js"></script>
+        <script src="./js/jquery/jquery.mobile-1.4.5.min.js"></script>
+        
+        
         <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>Hello World</title>
+        <title>Electricity</title>
+                
+		<script type="text/javascript" charset="utf-8">
+            var domain = "http://inn0v.com/test/";
+            var domain = "http://192.168.1.22/";
+            var db = [];
+            var getImg = false; /* to check wether the user has taken an image or not */
+            var curLat = 0;
+            var curLon = 0;
+            setTimeout(function(){
+                if(isMobile.Android()){
+                //    $('.isAndroidHide').hide();
+                }
+            },0);
+            /*
+            $( "#hh" ).bind( "click", function(event, ui) {
+                alert('gd');
+            });
+            */
+            $( document ).ready(function() {
+                /*
+                $.mobile.defaultPageTransition   = 'none'
+                $.mobile.defaultDialogTransition = 'none'
+                $.mobile.buttonMarkup.hoverDelay = 0
+                */
+                
+                $(".dev-back").on("vclick",function(e){
+                    if(isMobile.iOS()){
+                        e.preventDefault();
+                        e.stopPropagation(); 
+                    }
+                    $.mobile.back();
+                });
+                
+                $( ".dev-btn" ).on("vclick",function(e){
+                    if(isMobile.iOS()){
+                        e.preventDefault();
+                        e.stopPropagation(); 
+                    } 
+                  $( ":mobile-pagecontainer" ).pagecontainer( "change", $(this).attr('href') );
+                });
+                
+                $(".dev-refresh-kv").on("vclick",function(e){
+                    var r = confirm("Do you want to update data?\nif you want to update only location press (Cancel)");
+                    if (r == true) {
+                        updateDB();
+                    } else {
+                        setDistance()
+                    }
+                });
+                
+                $( ".dev-refresh-map" ).on("vclick",function(e){
+                    drawMap(LatLng);
+                });
+                
+                $( ".dev-single-location" ).on("vclick",function(e){
+                    setTimeout(function(){
+                        drawMap(LatLng);
+                    },500); 
+                });
+                
+                $(".dev-all-location").on("vclick",function(){
+                    LatLng = [];
+                    var i = 0;
+                    for(i = 0; i < db.length; i++){
+                        LatLng.push({lat: parseFloat(db[i].latitude), lng: parseFloat(db[i].longitude)});
+                    }
+                    setTimeout(function(){
+                        drawMap(LatLng);
+                    },500);
+                }); 
+                
+                $(document.body).on("vclick", ".dev-listview a", function(e){
+                    view_kv($(this).attr('num')); 
+                });
+                
+                
+                $('#dev-comment-form').on("submit",function(e){
+                    
+                    formData = {
+                        name: $('#fname').val(),
+                        subject: $('#subject').val(),
+                        email: $('#email').val(),
+                        send_to: $('#send_to').val(),
+                        img: $('#comment_image').attr('src')
+                    };
+                    
+                    if(getImg == false){
+                        alert('You have to take an image');
+                        return false;
+                    }
+                    show_loading();
+                    
+                    $.ajax({
+                      method: "POST", 
+                      contentType: "application/json; charset=utf-8",
+                      data: JSON.stringify(formData),
+                      url: domain+"send_comment.php",
+                      dataType: "json",
+                      success:function(data) {
+                        hide_loading(); 
+                        if(data.type === "error"){
+                            alert('comment has not send');
+                        }else{
+                            getImg = false;
+                            alert(data.text);
+                        }
+                      }
+                    }).fail(function(data){
+                        alert('comment has not send, check internet connection');
+                        hide_loading();
+                    });
+             
+                    // to prevent refreshing the whole page page
+                    return false;
+             
+                });
+                
+                /*
+                var user = {'name':'John'};
+                sessionStorage.setItem('user', JSON.stringify(user));
+                */
+                
+                 
+                 
+                function updateDB(){
+                    show_loading();
+                    $.ajax({
+                          method: "POST", 
+                          contentType: "application/json; charset=utf-8",
+                          data: {},
+                          url: domain+"get_data.php",
+                          dataType: "json",
+                          success:function(data) {
+                            object = data//jQuery.parseJSON(data);
+                            db = object.data; 
+                           
+                           /* 
+                            sessionStorage.setItem('dbname', JSON.stringify(db));
+                            var obj_t = JSON.parse(sessionStorage.dbname);
+                            alert(obj_t[2].name);
+                            */
+                            
+                          setTimeout(function(){
+                            listview();
+                          }, 100);
+                            
+                          hide_loading();
+                          } 
+                          
+                        }).fail(function(){
+                            alert('check internet connection');
+                            hide_loading();
+                        });
+                }
+                updateDB();
+                    
+                    
+                
+            });
+            
+            var LatLng = [];
+            var id_kv_view = 0;
+             function drawMap(LatLng) { 
+                    var myOptions = {
+                        zoom: 6,
+                        center: LatLng[0],
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                    };
+                    var map = new google.maps.Map(document.getElementById("map"), myOptions);
+                    
+                    // Add an overlay to the map of current lat/lng
+                    var i;
+                    if(LatLng.length > 1){
+                    	for(i = 0; i< LatLng.length; i++){
+                    	  var marker = new google.maps.Marker({
+                    		position: LatLng[i],
+                    		map: map,
+                    		title: 'Hello World!',
+                            html: '<p>'+db[i].type+'kv : '+db[i].name+'</p>'
+                    	  });
+                          
+                          
+                          var infowindow = new google.maps.InfoWindow({
+                            content: '<p>Marker Location:' + marker.getPosition() + '</p>'
+                          });
+                        /*
+                            infowindow.setContent(marker.html);
+                            infowindow.open(map, marker);
+                            */
+                          google.maps.event.addListener(marker, 'click', function() {
+                            infowindow.setContent(this.html);
+                            infowindow.open(map, this);
+                          });
+
+                          
+                    	}
+                    }else{
+                        if(LatLng.length == 1){ 
+                            var marker = new google.maps.Marker({
+                        		position: LatLng[0],
+                        		map: map,
+                        		title: 'Hello World!',
+                                html: '<p>'+db[id_kv_view].type+'kv : '+db[id_kv_view].name+'</p>'
+                        	  });
+                              
+                              var infowindow = new google.maps.InfoWindow({
+                                content: '<p>Marker Location:' + marker.getPosition() + '</p>'
+                              });
+                            
+                              google.maps.event.addListener(marker, 'click', function() {
+                                infowindow.setContent(this.html);
+                                infowindow.open(map, this);
+                              });
+                          }
+                    } 
+                    
+                    
+                }
+            $( document ).on( "pageinit", "#location", function() {
+                
+            });
+            
+        </script>
     </head>
     <body>
-        <div class="app">
-            <h1>PhoneGap</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
+       <!-- <div id="dev-background"></div> -->
+        
+        <div data-role="page" id="main">
+            <div class="dev-header" data-role="header">
+                <h1>AMD-Qassim</h1>
             </div>
-			<input type="button" name="image" onClick="getimg()" value="choose an image" />
-            <img id="myImage" width="100%"/>
+            
+            <div data-role="main" class="ui-content dev-body">
+                <div class="ui-grid-a">
+                
+                    <div class="ui-block-a">
+                        <div href="#132kv" class="ui-btn dev-btn ui-dev-btn"><img id="test" src="img/132kv.png" /><br /><span>132 KV</span></div>
+                        <br />
+                        <br />
+                        <div href="#location" class="ui-btn dev-btn  ui-dev-btn dev-all-location"><img src="img/location.png" /><br /><span>Location</span></div>
+                    </div>
+                    
+                    <div class="ui-block-b">
+                        <div href="#380kv" class="ui-btn dev-btn noshadow  ui-dev-btn"><img src="img/380kv.png" /><br /><span>380 KV</span></div>
+                        <br />
+                        <br />
+                        <div href="#media" class="ui-btn dev-btn  ui-dev-btn"><img src="./img/media.png" /><br /><span>Comment</span></div>
+                    </div>
+                </div>
+                <div class="ui-grid-solo">
+                    <div class="ui-block-a">
+                        <div href="#contact"  class="ui-btn ui-icon-phone ui-btn-icon-top dev-btn  ui-dev-btn">Important Numbers</div>
+                    </div>
+                </div>
+            </div>
+            
+  
         </div>
+        
+        <div data-role="page" id="132kv">
+            <div class="dev-header" data-role="header">
+                <div href="#main" data-rel="back" class="ui-btn ui-icon-arrow-l ui-corner-all ui-btn-icon-left isAndroidHide dev-back ui-btn-left">Back</div>
+                <div href="#" class="ui-btn ui-icon-refresh ui-corner-all ui-btn-icon-right ui-btn-icon-notext ui-btn-right dev-refresh-kv"></div>
+                <h1>AMD-Qassim</h1>
+            </div>
+            <div data-role="main" class="ui-content dev-body">
+                <h2 class="dev-body-title">132 KV</h2> 
+                <ul data-role="listview" data-inset="true" class="dev-listview" id="dev-listview-132">
+                  
+                </ul>
+            </div>
+        </div>  
+        
+        <div data-role="page" id="380kv">
+        
+            <div class="dev-header" data-role="header">
+                <div href="#main" data-rel="back" class="ui-btn ui-icon-arrow-l ui-corner-all ui-btn-icon-left isAndroidHide dev-back ui-btn-left">Back</div>
+                <div href="#" class="ui-btn ui-icon-refresh ui-corner-all ui-btn-icon-right ui-btn-icon-notext ui-btn-right dev-refresh-kv"></div>
+                <h1>AMD-Qassim</h1>
+            </div>
+            
+            <div data-role="main" class="ui-content dev-body"> 
+                <h2 class="dev-body-title">380 KV</h2>
+                <ul data-role="listview" data-inset="true" class="dev-listview" id="dev-listview-380">
+                  
+                </ul>
+            </div>
+            
+        </div>
+        
+        <div data-role="page" id="view_kv"> 
+            <div class="dev-header" data-role="header">
+                <div href="#main" data-rel="back" class="ui-btn ui-icon-arrow-l ui-corner-all ui-btn-icon-left isAndroidHide dev-back ui-btn-left">Back</div>
+                <h1>AMD-Qassim</h1>
+            </div>
+            <div data-role="main" class="ui-content dev-body">
+                <h2 class="dev-body-title" id="dev-view-kv-title">8101 Data</h2>
+                
+                <a href="#sld" data-rel="popup" data-position-to="window" class="ui-btn ">SLD</a>
+                <div data-role="popup" id="sld">
+                    <p>SLD:</p> 
+                    <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                    <img src="./img/media.png" style="width:100%" alt="SLD" />
+                </div>
+                
+                <a href="#location" data-transition="slide" class="ui-btn dev-single-location">Location</a>
+                
+                <div data-role="collapsible" data-collapsed="false" class="dev-kv-view-info">
+                  <h1>GIS</h1>
+                  <div id="dev-kv-view-info-gis">
+                      <div class="dev-kv-view-box">
+                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
+                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                      </div>
+                      <div class="dev-kv-view-box">
+                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
+                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                      </div>
+                  </div>
+                </div>
+                <div data-role="collapsible" data-collapsed="false" class="dev-kv-view-info">
+                  <h1>Transformer</h1>
+                  <div id="dev-kv-view-info-trans">
+                      <div class="dev-kv-view-box">
+                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
+                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                      </div>
+                      <div class="dev-kv-view-box">
+                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
+                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                      </div>
+                      <div class="dev-kv-view-box">
+                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
+                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                      </div>
+                  </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div data-role="page" id="media">
+            <div class="dev-header" data-role="header">
+                <div href="#main" data-rel="back" class="ui-btn ui-icon-arrow-l ui-corner-all ui-btn-icon-left isAndroidHide ui-btn-left dev-back ui-btn-left">Back</div>
+                <h1>AMD-Qassim</h1>
+            </div>
+            
+            <div data-role="main" class="ui-content dev-body">
+                <h2 class="dev-body-title">Comment</h2>
+                <form method="post" action="#" class="dev-comment-form" id="dev-comment-form" data-ajax="false">
+                    
+                        <label for="fname">Your first name:</label>
+                        <input type="text" name="fname" id="fname" data-clear-btn="true" required/>
+                        
+                        <label for="email">Your email:</label>
+                        <input type="email" name="email" id="email" data-clear-btn="true" required/>
+                        
+                        <label for="subject">Subject:</label>
+                        <input type="text" name="subject" id="subject" data-clear-btn="true" required/>
+                        
+                        <input onclick="getimg();" type="button" value="Take an image" name="image" id="image" data-clear-btn="true"/>
+                        <div id="comment_image_div"><img src="img/logo.png" id="comment_image" /></div>
+                      
+                        <label for="send_to">Send it to:</label>
+                        <select name="send_to" id="send_to" multiple="multiple" required>
+                          <option value="1">مدير دائرة المحطات</option>  <!-- 1-->
+                          <option value="2">رئيس قسم المحطات</option>
+                          <option value="3">رئيس قسم التشغيل الميداني</option>
+                          <option value="4">رئيس قسم صيانة مرافق النقل</option> 
+                          <option value="5">مدير دائرة الحماية والاختبارات واتصالات وسكادا</option>  <!-- 2-->
+                          <option value="6">رئيس قسم الحماية والاختبارات</option>
+                          <option value="7">رئيس قسم اتصالات وسكادا</option>
+                          <option value="8">مدير دائرة الخطوط</option>  <!-- 3 -->
+                          <option value="9">رئيس قسم صيانة الخطوط</option>
+                          <option value="10">رئيس قسم الدوريات ومتابعة التعديات</option>
+                          <option value="11">رئيس قسم تخطيط الصيانة والدعم الفني</option>   <!-- 4 -->
+                        </select>
+                      
+                      <input type="submit" id="dev-submit-comment-form" value="Send" data-icon="check" data-iconpos="right" data-inline="true"/>
+                    
+                </form>
+            </div>
+            
+        </div>
+        
+        <div data-role="page" id="location" data-url="location">
+            <div class="dev-header" data-role="header">
+                <div href="#main" data-rel="back" class="ui-btn ui-icon-arrow-l ui-corner-all ui-btn-icon-left isAndroidHide dev-back ui-btn-left">Back</div>
+                <div href="#" class="ui-btn ui-icon-refresh ui-corner-all ui-btn-icon-right ui-btn-icon-notext ui-btn-right dev-refresh-map"></div>
+                <h1>AMD-Qassim</h1>
+            </div>
+            <div data-role="main" class="ui-content dev-body">
+                <h2 class="dev-body-title">location</h2>
+                
+                <div id="map"></div>
+            </div>
+        </div> 
+        
+        <div data-role="page" id="contact">
+            <div class="dev-header" data-role="header">
+                <div href="#main" data-rel="back" class="ui-btn ui-icon-arrow-l ui-corner-all ui-btn-icon-left isAndroidHide dev-back ui-btn-left">Back</div>
+                <h1>AMD-Qassim</h1>
+            </div>
+            
+            <div data-role="main" class="ui-content dev-body">
+                <h2 class="dev-body-title">Important Numbers</h2>
+                
+                <br /><br /><br /><br />
+                
+                <div class="phone-number">
+                    <div class="phone-number-title">Qassim-Control</div>
+                    <div onclick="window.open('tel:+966000000000', '_system')" class="phone-number-num">+966000000000</div>
+                </div>
+                
+                <br />
+                <hr />
+                <br />
+                
+                
+                <div class="phone-number">
+                    <div class="phone-number-title">Riyadh-Control</div>
+                    <div onclick="window.open('tel:+966000000000', '_system')" class="phone-number-num">+966000000000</div>
+                </div>
+            </div>
+            
+        </div>
+        
+            
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript">
             app.initialize();
         </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3_X0rkU5lJ3-tPoJ0esITRXkxdY6lAZ0&signed_in=true&callback=initMap"></script>
     </body>
 </html>

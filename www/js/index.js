@@ -34,22 +34,11 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-		console.log('hhhhhhhhhhhhhhhhhhhhhhhhhh'+window.sqlitePlugin);
-		setTimeout(function(){
-			initDB();
-		}, 100);
 		
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
+		isReady = true;
     }
 };
 
@@ -78,18 +67,12 @@ function getimg(){
 }
 
 function onSuccess(imageData) {
-    var image = document.getElementById('myImage');
+    var image = document.getElementById('comment_image');
     image.src = "data:image/jpeg;base64," + imageData;
+    getImg = true;
     //image.src = imageData;
           
          
-
-    navigator.notification.confirm(
-        'You are the winner!', // message
-        onConfirm,            // callback to invoke with index of button pressed
-        'Game Over',           // title
-        ['Restart','Exit']     // buttonLabels
-    );
 	
 }
         
@@ -98,9 +81,146 @@ function onFail(message) {
 }
 
  function onConfirm(buttonIndex) {
-    alert('You selected button ' + buttonIndex);
-    navigator.vibrate([2000]);
-	navigator.notification.vibrate(2000);
 
  }
+ 
+ var isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+ }};
+ 
+function dev_kv_view_box(fact, date){
+    box = "<div class=\"dev-kv-view-box\">";
+        box += "<p><span class=\"title\">Manufacturer:</span> <span>"+fact+"</span></p>";
+        box += "<p><span class=\"title\">Operation Start Date:</span> <span>"+date+"</span></p>";
+    box += "</div>";
+    return box;
+}
 
+function get_HTML_fact_date(obj){
+    var j = 0;
+    HTML = "";
+    for(j = 0; j < obj.length; j++){
+        HTML += dev_kv_view_box(obj[j].fact, obj[j].date);
+    }
+    return HTML;
+}
+
+function view_kv(id){
+  //  id = parseInt(id);
+    var name = db[id].name;
+    var srcImg = db[id].sld;
+    LatLng = [{lat: parseFloat(db[id].latitude), lng: parseFloat(db[id].longitude)}];
+    id_kv_view = id;
+    var gisHTML = get_HTML_fact_date(db[id].gis);
+    var transHTML = get_HTML_fact_date(db[id].trans);
+    $("#dev-view-kv-title").html(name+" Data");
+    $("#sld img").attr('src',domain+srcImg);
+    $("#dev-kv-view-info-gis").html(gisHTML);
+    $("#dev-kv-view-info-trans").html(transHTML);
+} 
+
+
+function deg2rad(deg){
+    return deg * Math.PI / 180;
+}
+
+function distance(lat1, lon1, lat2, lon2){
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1); // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    return parseInt(d*1.10);
+}
+
+
+function listview_li(num, name, city){
+    return "<li><a num=\""+num+"\" href=\"#view_kv\" data-transition=\"slide\"><h2>"+name+"</h2><p>"+city+" <span class=\"distance\">"+"0"+"km</span></p></a></li>";
+}
+
+
+function listview(){
+    
+    $kv132 = "";
+    $kv380 = "";
+     
+    var num;
+    var name;
+    var city;
+    var i = 0; 
+    for(i = 0; i < db.length; i++){
+        num = i;
+        name = db[i].name; 
+        city = db[i].city;
+        if(db[i].type === '132'){
+            $kv132 += listview_li(num, name, city);
+        }else{ 
+            $kv380 += listview_li(num, name, city);
+        }
+    }
+    
+    $("#dev-listview-380").html($kv380).listview().listview('refresh');
+    $("#dev-listview-132").html($kv132).listview().listview('refresh');
+
+     
+    setDistance();
+}
+
+function setDistance(){
+    if(navigator.geolocation){ 
+        var options ={
+            enableHighAccuracy: false,
+            timeout: 15 * 1000
+        }; 
+        navigator.geolocation.getCurrentPosition(onSuccessGeolocation, onErrorGeolocation, options);
+    }else{ 
+        alert("Geolocation is not supported.");
+    }
+}
+                 
+function onSuccessGeolocation(position){ 
+    curLat = position.coords.latitude;
+    curLon = position.coords.longitude; 
+    
+    $('.dev-listview a').each(function(){
+        num = $(this).attr('num');
+        km = distance(curLat,curLon,db[num].latitude,db[num].longitude);
+        $(this).find('.distance').html(km+'km');
+    });
+    
+} 
+function onErrorGeolocation() {
+     alert('The mobile App cannot detect your Geolocation, make sure your location services(GPS) is enable');
+}
+
+function show_loading(){
+    $.mobile.loading( "show", {
+      text: "Loading wait...",
+      textVisible: true,
+      theme: "b",
+      html: ""
+    });
+}
+
+function hide_loading(){
+    setTimeout(function(){
+        $.mobile.loading( "hide" );
+    }, 500);
+}

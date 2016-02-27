@@ -42,21 +42,8 @@ body {
     margin:0px;
     padding:0px;
     text-transform:uppercase;
+    text-transform: none !important;
     width:100%;
-}
-
-/* Portrait layout (default) */
-.app {
-    background:url(../img/logo.png) no-repeat center top; /* 170px x 200px */
-    position:absolute;             /* position in the center of the screen */
-    left:50%;
-    top:50%;
-    height:50px;                   /* text area height */
-    width:225px;                   /* text area width */
-    text-align:center;
-    padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-    margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
-                                   /* offset horizontal: half of text area width */
 }
 
 /* Landscape layout (with min-width) */
@@ -70,32 +57,136 @@ body {
 }
 
 h1 {
-    font-size:24px;
+    font-size:22px;
     font-weight:normal;
     margin:0px;
     overflow:visible;
     padding:0px;
     text-align:center;
 }
-
-.event {
-    border-radius:4px;
-    -webkit-border-radius:4px;
-    color:#FFFFFF;
-    font-size:12px;
-    margin:0px 30px;
-    padding:2px 0px;
+ 
+.ui-page-active2,#main{ 
+    
+    background: url(../img/bg4.png) bottom center no-repeat fixed !important;
+    background-color: white !important;
+    background-size: 100%;
+    /*
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  */
 }
 
-.event.listening {
-    background-color:#333333;
-    display:block;
+.dev-header{
+    text-align: center;
+    background: url('../img/bg_white.png') !important;
 }
 
-.event.received {
-    background-color:#4B946A;
-    display:none;
+.dev-header h1{
+    margin: 0 30% !important;
+    font-size: 19px !important;
+    color: #124294 !important;
+    font-weight: bold !important;
+    overflow: visible !important;
+    text-align: center !important;
+    background: url('../img/logo.png') no-repeat left center;
+    background-size: 40px 40px;
+    padding-left: 43px !important;
+    text-align: center !important;
+    padding-top: .5em !important;
+    padding-bottom: .5em !important;
 }
+
+.dev-body h2.dev-body-title{
+    text-align: center;
+    color: #005E26 !important;
+    color: #fff !important;
+    padding: 3px 0px !important;
+    width: 100%;
+    background: #F75F00;
+}
+
+.distance{
+    color: #aaa;
+}
+
+
+.dev-kv-view-info span.title{
+    font-weight: bold;
+}
+
+.dev-kv-view-box{
+    border: 1px solid #ccc;
+    padding: 4px;
+}
+
+.dev-btn{
+}
+
+.ui-dev-btn{
+    background: url('../img/bg_white2.png') !important;
+}
+
+.dev-btn img{
+    width: 100%; 
+}
+
+.dev-back{
+    /*
+    position: absolute;
+    top: 0.24em;
+    left: .4em;
+    margin: 0;
+    */
+}
+
+.dev-refresh-map{
+}
+
+.dev-comment-form{
+}
+
+.dev-comment-form label{
+    margin-top: 20px;
+    color: #A23500;
+}
+
+.dev-comment-form #image{
+    margin-top: 20px;
+    color: #A23500;
+}
+
+#comment_image_div,#comment_image{
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
+}
+
+
+
+#map{
+    width: 100%;
+    height: 400px;
+}
+
+.phone-number{
+    text-align: center;
+    font-size: 18px;
+}
+
+.phone-number .phone-number-title{
+    font-weight: bold;
+    color: #A23E00;
+}
+
+.phone-number .phone-number-num{
+    color: blue;
+    text-decoration: underline;
+}
+
+#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
+
 
 @keyframes fade {
     from { opacity: 1.0; }
