@@ -203,7 +203,10 @@
                         center: LatLng[0],
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     };
+                //    google.maps.event.clearListeners();
                     var map = new google.maps.Map(document.getElementById("map"), myOptions);
+                    
+                    
                     
                     // Add an overlay to the map of current lat/lng
                     var i;
@@ -468,6 +471,6 @@
         <script type="text/javascript">
             app.initialize();
         </script>
-        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3_X0rkU5lJ3-tPoJ0esITRXkxdY6lAZ0&signed_in=true&callback=initMap"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3_X0rkU5lJ3-tPoJ0esITRXkxdY6lAZ0&signed_in=false&callback=initMap"></script>
     </body>
 </html>
