@@ -107,7 +107,7 @@ function onFail(message) {
 function dev_kv_view_box(fact, date){
     box = "<div class=\"dev-kv-view-box\">";
         box += "<p><span class=\"title\">Manufacturer:</span> <span>"+fact+"</span></p>";
-        box += "<p><span class=\"title\">Operation Start Date:</span> <span>"+date+"</span></p>";
+        box += "<p><span class=\"title\">Energized On:</span> <span>"+date+"</span></p>";
     box += "</div>";
     return box;
 }
@@ -151,8 +151,8 @@ function distance(lat1, lon1, lat2, lon2){
 }
 
 
-function listview_li(num, name, city){
-    return "<li><a num=\""+num+"\" href=\"#view_kv\" data-transition=\"slide\"><h2>"+name+"</h2><p>"+city+" <span class=\"distance\">"+"0"+"km</span></p></a></li>";
+function listview_li(num, name, city, km){
+    return "<li><a num=\""+num+"\" href=\"#view_kv\" data-transition=\"slide\"><h2>"+name+"</h2><p>"+city+" <span class=\"distance\">"+km+"km</span></p></a></li>";
 }
 
 
@@ -164,15 +164,17 @@ function listview(){
     var num;
     var name;
     var city;
+    var km;
     var i = 0; 
     for(i = 0; i < db.length; i++){
         num = i;
         name = db[i].name; 
         city = db[i].city;
+        km = db[i].km;
         if(db[i].type === '132'){
-            $kv132 += listview_li(num, name, city);
+            $kv132 += listview_li(num, name, city, km);
         }else{ 
-            $kv380 += listview_li(num, name, city);
+            $kv380 += listview_li(num, name, city, km);
         }
     }
     
@@ -180,7 +182,7 @@ function listview(){
     $("#dev-listview-132").html($kv132).listview().listview('refresh');
 
      
-    setDistance();
+  //  setDistance();
 }
 
 function setDistance(){
@@ -223,4 +225,8 @@ function hide_loading(){
     setTimeout(function(){
         $.mobile.loading( "hide" );
     }, 500);
+}
+
+function goToNavigation(lat, lng){
+    window.open('http://maps.google.com/maps?daddr='+lat+','+lng+'','_system', '');
 }

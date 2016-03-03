@@ -77,11 +77,11 @@
                 });
                 
                 $(".dev-refresh-kv").on("vclick",function(e){
-                    var r = confirm("Do you want to update data?\nif you want to update only location press (Cancel)");
+                    var r = confirm("Do you want to update data?");
                     if (r == true) {
                         updateDB();
                     } else {
-                        setDistance()
+                    //    setDistance()
                     }
                 });
                 
@@ -139,6 +139,9 @@
                             alert('comment has not send');
                         }else{
                             getImg = false;
+                            $('#comment_image').attr('src','./img/logo.png');
+                            $('#subject').val('');
+                            $('#send_to').val('');
                             alert(data.text);
                         }
                       }
@@ -200,7 +203,7 @@
              function drawMap(LatLng) { 
                     var myOptions = {
                         zoom: 6,
-                        center: LatLng[0],
+                        center: {lat: 26.40905, lng: 43.94063},
                         mapTypeId: google.maps.MapTypeId.ROADMAP
                     };
                 //    google.maps.event.clearListeners();
@@ -211,12 +214,14 @@
                     // Add an overlay to the map of current lat/lng
                     var i;
                     if(LatLng.length > 1){
+                        var iconName = "";
                     	for(i = 0; i< LatLng.length; i++){
+                    	   iconName = (db[i].type == '380')?"o":"";
                     	  var marker = new google.maps.Marker({
                     		position: LatLng[i],
                     		map: map,
-                    		title: 'Hello World!',
-                            html: '<p>'+db[i].type+'kv : '+db[i].name+'</p>'
+                            label: iconName,
+                            html: '<p>'+db[i].type+'kv : '+db[i].name+'<br/><a onClick="goToNavigation('+LatLng[i]["lat"]+','+LatLng[i]["lng"]+')" href="#">Navigation</a></p>'
                     	  });
                           
                           
@@ -239,9 +244,11 @@
                             var marker = new google.maps.Marker({
                         		position: LatLng[0],
                         		map: map,
-                        		title: 'Hello World!',
-                                html: '<p>'+db[id_kv_view].type+'kv : '+db[id_kv_view].name+'</p>'
+                        		title: '',
+                                html: '<p>'+db[id_kv_view].type+'kv : '+db[id_kv_view].name+'<br/><a onClick="goToNavigation('+LatLng[0]["lat"]+','+LatLng[0]["lng"]+')" href="#">Navigation</a></p>'
                         	  });
+                              
+                              map.setCenter(marker.getPosition());
                               
                               var infowindow = new google.maps.InfoWindow({
                                 content: '<p>Marker Location:' + marker.getPosition() + '</p>'
@@ -362,16 +369,16 @@
                   <h1>Transformer</h1>
                   <div id="dev-kv-view-info-trans">
                       <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
-                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                          <p><span class="title">Manufacturer:</span> <span>null</span></p>
+                          <p><span class="title">Energized On::</span> <span>0000-00-00</span></p>
                       </div>
                       <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
-                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                          <p><span class="title">Manufacturer:</span> <span>null</span></p>
+                          <p><span class="title">Energized On:</span> <span>0000-00-00</span></p>
                       </div>
                       <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
-                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
+                          <p><span class="title">Manufacturer:</span> <span>null</span></p>
+                          <p><span class="title">Energized On:</span> <span>0000-00-00</span></p>
                       </div>
                   </div>
                 </div>
