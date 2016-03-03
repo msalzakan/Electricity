@@ -141,7 +141,7 @@
                             getImg = false;
                             $('#comment_image').attr('src','./img/logo.png');
                             $('#subject').val('');
-                            $('#send_to').val('');
+                            $('#send_to').val('').selectmenu('refresh');
                             alert(data.text);
                         }
                       }
@@ -347,7 +347,12 @@
                 <div data-role="popup" id="sld">
                     <p>SLD:</p> 
                     <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
-                    <img src="./img/media.png" style="width:100%" alt="SLD" />
+                    <img src="./img/media.png" style="width:100%" alt="SLD" /> 
+                    <br />
+                    <br />
+                    <a href="#" onclick="goToImageURLDev();" class="openInBrowser"> Open the image in the browser</a>
+                    <br />
+                    <br />
                 </div>
                 
                 <a href="#location" data-transition="slide" class="ui-btn dev-single-location">Location</a>
@@ -355,31 +360,11 @@
                 <div data-role="collapsible" data-collapsed="false" class="dev-kv-view-info">
                   <h1>GIS</h1>
                   <div id="dev-kv-view-info-gis">
-                      <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
-                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
-                      </div>
-                      <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>TIT</span></p>
-                          <p><span class="title">Operation Start Date:</span> <span>2014/4/1</span></p>
-                      </div>
                   </div>
                 </div>
                 <div data-role="collapsible" data-collapsed="false" class="dev-kv-view-info">
                   <h1>Transformer</h1>
                   <div id="dev-kv-view-info-trans">
-                      <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>null</span></p>
-                          <p><span class="title">Energized On::</span> <span>0000-00-00</span></p>
-                      </div>
-                      <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>null</span></p>
-                          <p><span class="title">Energized On:</span> <span>0000-00-00</span></p>
-                      </div>
-                      <div class="dev-kv-view-box">
-                          <p><span class="title">Manufacturer:</span> <span>null</span></p>
-                          <p><span class="title">Energized On:</span> <span>0000-00-00</span></p>
-                      </div>
                   </div>
                 </div>
             </div>

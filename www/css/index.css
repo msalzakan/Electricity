@@ -121,6 +121,12 @@ h1 {
     padding: 4px;
 }
 
+/* SLD */
+.openInBrowser{
+    color: #F75F00 !important;
+    font-weight: bold !important;
+}
+
 .dev-btn{
 }
 

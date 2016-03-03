@@ -230,3 +230,9 @@ function hide_loading(){
 function goToNavigation(lat, lng){
     window.open('http://maps.google.com/maps?daddr='+lat+','+lng+'','_system', '');
 }
+
+function goToImageURLDev() {
+    url = domain+db[id_kv_view].sld;
+    window.open(url,'_system', '');
+    
+}
