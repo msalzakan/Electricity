@@ -155,11 +155,25 @@
              
                 });
                 
+                /* get Data from localStorage */
+                try { 
+               //   localStorage.clear();
+                  db = JSON.parse(localStorage.getItem("db_elect"));
+                  if(db.length <= 0){
+                    updateDB();
+                  } 
+                  setTimeout(function(){
+                    listview();
+                  }, 100);
+                            
+                }catch(err) {
+                    updateDB();
+                }
                 /*
                 var user = {'name':'John'};
                 sessionStorage.setItem('user', JSON.stringify(user));
                 */
-                
+                 
                  
                  
                 function updateDB(){
@@ -174,6 +188,8 @@
                             object = data//jQuery.parseJSON(data);
                             db = object.data; 
                            
+                           localStorage.setItem("db_elect", JSON.stringify(db));
+                            
                            /* 
                             sessionStorage.setItem('dbname', JSON.stringify(db));
                             var obj_t = JSON.parse(sessionStorage.dbname);
@@ -192,7 +208,7 @@
                             hide_loading();
                         });
                 }
-                updateDB();
+             //   updateDB();
                     
                     
                 
