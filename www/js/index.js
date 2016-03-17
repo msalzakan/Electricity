@@ -39,7 +39,7 @@ var app = {
     // Update DOM on a Received Event
     receivedEvent: function(id) {
 		isReady = true;
-		navigator.splashscreen.hide();
+        navigator.splashscreen.hide();
     }
 };
 
