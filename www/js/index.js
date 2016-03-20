@@ -40,6 +40,9 @@ var app = {
     receivedEvent: function(id) {
 		isReady = true;
         //navigator.splashscreen.hide();
+        setTimeout(function() { 
+            navigator.splashscreen.hide(); 
+        }, 1000); 
     }
 };
 
