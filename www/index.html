@@ -77,10 +77,6 @@
                 });
                 
                 $(".dev-refresh-kv").on("vclick",function(e){
-                    if(isMobile.iOS()){
-                        e.preventDefault();
-                        e.stopPropagation(); 
-                    }
                     var r = confirm("Do you want to update data?");
                     if (r == true) {
                         updateDB();
@@ -90,18 +86,10 @@
                 });
                 
                 $( ".dev-refresh-map" ).on("vclick",function(e){
-                    if(isMobile.iOS()){
-                        e.preventDefault();
-                        e.stopPropagation(); 
-                    }
                     drawMap(LatLng);
                 });
                 
                 $( ".dev-single-location" ).on("vclick",function(e){
-                    if(isMobile.iOS()){
-                        e.preventDefault();
-                        e.stopPropagation(); 
-                    }
                     setTimeout(function(){
                         drawMap(LatLng);
                     },500); 
