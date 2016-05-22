@@ -38,7 +38,7 @@
                 
 		<script type="text/javascript" charset="utf-8">
             var domain = "http://inn0v.com/projects/electricity/";
-        //    var domain = "http://192.168.1.22/";
+            var version = "1.0";
             var db = [];
             var getImg = false; /* to check wether the user has taken an image or not */
             var curLat = 0;
@@ -118,7 +118,9 @@
                         subject: $('#subject').val(),
                         email: $('#email').val(),
                         send_to: $('#send_to').val(),
-                        img: $('#comment_image').attr('src')
+                        img: $('#comment_image').attr('src'),
+                        version_num: version,
+                        token: "DABHM-2DBPD-ACETA-VS005-X8ES0-CANES"
                     };
                     
                     if(getImg == false){
@@ -136,7 +138,7 @@
                       success:function(data) {
                         hide_loading(); 
                         if(data.type === "error"){
-                            alert('comment has not send');
+                            alert(data.text);
                         }else{
                             getImg = false;
                             $('#comment_image').attr('src','./img/logo.png');
@@ -181,24 +183,29 @@
                     $.ajax({
                           method: "POST", 
                           contentType: "application/json; charset=utf-8",
-                          data: {},
+                          data: JSON.stringify({version_num: version, token: "COJBM-YJ4WB-N9DF7-IAR6R-4WYI5-HFU1U"}),
                           url: domain+"get_data.php",
                           dataType: "json",
                           success:function(data) {
                             object = data//jQuery.parseJSON(data);
                             db = object.data; 
-                           
-                           localStorage.setItem("db_elect", JSON.stringify(db));
                             
-                           /* 
-                            sessionStorage.setItem('dbname', JSON.stringify(db));
-                            var obj_t = JSON.parse(sessionStorage.dbname);
-                            alert(obj_t[2].name);
-                            */
-                            
-                          setTimeout(function(){
-                            listview();
-                          }, 100);
+                            if(object.type === "error"){
+                                alert(data.text);
+                            }else{
+                               localStorage.setItem("db_elect", JSON.stringify(db));
+                                
+                               /* 
+                                sessionStorage.setItem('dbname', JSON.stringify(db));
+                                var obj_t = JSON.parse(sessionStorage.dbname);
+                                alert(obj_t[2].name);
+                                */
+                                
+                              setTimeout(function(){
+                                listview();
+                              }, 100);
+                          
+                          }
                             
                           hide_loading();
                           } 
@@ -412,7 +419,7 @@
                         <label for="send_to">Send it to:</label>
                         <select name="send_to" id="send_to" multiple="multiple" data-native-menu="false" required>
                           <option value="1">مدير دائرة المحطات</option>  <!-- 1-->
-                          <option value="2">رئيس قسم المحطات</option>
+                          <option value="2">رئيس قسم صيانة المحطات</option>
                           <option value="3">رئيس قسم التشغيل الميداني</option>
                           <option value="4">رئيس قسم صيانة مرافق النقل</option> 
                           <option value="5">مدير دائرة الحماية والاختبارات واتصالات وسكادا</option>  <!-- 2-->
